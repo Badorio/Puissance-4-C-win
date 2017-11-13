@@ -10,4 +10,6 @@ Mode 1: 1 joueur
 Mode 2: 2 joueurs
 */
 
+void affDernierCoup(int tab[6][7], int colonne, int joueur);
+
 #endif // AFFICHAGE_H_INCLUDED

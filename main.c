@@ -6,12 +6,11 @@
 #include "jeu.h" //Fonctions relatives au jeu en tant que tel
 
 
-
 /*
 BENJAMIN BELLUZ
 HEPL INPRES, Informatique de gestion 1 2105
-Dernière modification : 10/11/2017 08:25
-Version en cours : 1.02
+Dernière modification : 13/11/2017 10:24
+Version en cours : 1.03
 
 1.0
 -Version complète initiale
@@ -20,6 +19,8 @@ Version en cours : 1.02
 1.02
 -ajout de la possibilité de quitter en partie en mode 2 joueurs
 -correction flickering quand l'ordinateur joue
+1.03
+-ajout d'un visuel du dernier coup joué par l'adversaire
 */
 
 
@@ -32,7 +33,7 @@ EZ DRAW POUR UNE INTERFACE UN PEU PLUS JOLIE
 */
 
 /*
-Dernier coup affiché ? Un pion de couleur sous la grille ?
+Attente avant affichage grille IA
 */
 
 int main()
@@ -50,7 +51,7 @@ int main()
     do
     {
         menu();
-
+        fflush(stdin);
         scanf("%d", &choixMenu);
         effacerAff();
         initGrille(grille);
@@ -94,6 +95,10 @@ int main()
             do
             {
                 joueur=cpt%2+1;
+
+                //Eviter de ne pas pouvoir recommencer une partie après en avoir quitté une et joueur en deuxieme
+                chCol='0';
+
                 switch(joueur)
                 {
                 //IA
@@ -104,8 +109,12 @@ int main()
                     break;
                 //JOUEUR
                 case 2:
+                    //AFFICHAGES
                     effacerAff();
                     afficherGrille(grille);
+                    if(cpt>1)
+                        affDernierCoup(grille, col, (cpt-1)%2+1);
+
                     printf("\nA vous de jouer !\n");
                     //SAISIE COLONNE
                     printf("Colonne [1...7] :\nQ: quitter\n");
@@ -144,12 +153,15 @@ int main()
                 cpt++;
             }
             while(victoire(grille)==-1 && verifPlein(grille)==0 && chCol!= 'Q' && chCol != 'q');
+            //AFFICHER LA GRILLE A LA FIN
+            afficherGrille(grille);
             finJeu(victoire(grille), choixMenu);
 
             break;
         //2 JOUEURS
         case 2:
             afficherGrille(grille);
+
             do
             {
                 joueur=cpt%2+1;
@@ -192,6 +204,7 @@ int main()
 
                 effacerAff();
                 afficherGrille(grille);
+                affDernierCoup(grille, col, joueur);
 
 
                 cpt++;

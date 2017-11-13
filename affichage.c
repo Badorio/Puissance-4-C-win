@@ -158,3 +158,37 @@ void finJeu(int identiteGagnant, int modeJeu)
             printf("\n\nVous avez quitte la partie.");
     }
 }
+
+void affDernierCoup(int tab[6][7], int colonne, int joueur)
+{
+    int cpt=colonne;
+    while(cpt>0)
+    {
+        color(0,0);
+        printf("OOOOOOO");
+        cpt--;
+    }
+
+    if(joueur==1)
+    {
+        color(0,0);
+        printf("OO");
+        color(9,9);
+        printf("OO");
+        color(0,0);
+        printf("OO");
+    }
+    else
+    {
+        if(joueur==2)
+        {
+            color(0,0);
+            printf("OO");
+            color(12,12);
+            printf("OO");
+            color(0,0);
+            printf("OO");
+        }
+    }
+    color(15,0);
+}
