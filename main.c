@@ -9,8 +9,8 @@
 /*
 BENJAMIN BELLUZ
 HEPL INPRES, Informatique de gestion 1 2105
-Dernière modification : 13/11/2017 10:24
-Version en cours : 1.03
+Dernière modification : 24/11/2017 14:05
+Version en cours : 1.04 -> Version interne
 
 1.0
 -Version complète initiale
@@ -21,6 +21,15 @@ Version en cours : 1.03
 -correction flickering quand l'ordinateur joue
 1.03
 -ajout d'un visuel du dernier coup joué par l'adversaire
+1.04
+-ajout de commentaires et préparation en vue d'élagage alpha-beta
+
+1.1
+-élagage alpha-beta -> modes de difficulté modifiés
+-ajout de commentaires
+-simplification de la fonction d'évaluation -> l'ordinateur va essayer de gagner, et plus de faire des séries de 2 et 3. Juste gagner
+-supprimer les fonctions min et max initiales -> plus que alphaBeta min et max
+-ajout d'un message quand l'ordinateur réfléchit
 */
 
 
@@ -103,6 +112,11 @@ int main()
                 {
                 //IA
                 case 1:
+                    effacerAff();
+                    afficherGrille(grille);
+
+                    printf("\n\nL'ordinateur reflechit...\n\n");
+
                     col=IAjouer(grille, p1, dif);
                     i=ligne(col, grille);
                     grille[i][col]=joueur;
@@ -146,7 +160,7 @@ int main()
 
                     break;
                 }
-                effacerAff();
+                //effacerAff();
                 //afficherGrille(grille);
                 //il faudrait la possibilité de faire attendre un peu avant l'affichage ici, pour eviter le flickering de quand l'ia joue
 
@@ -155,6 +169,7 @@ int main()
             while(victoire(grille)==-1 && verifPlein(grille)==0 && chCol!= 'Q' && chCol != 'q');
             //AFFICHER LA GRILLE A LA FIN
             afficherGrille(grille);
+            affDernierCoup(grille, col, (cpt+1)%2+1);
             finJeu(victoire(grille), choixMenu);
 
             break;
@@ -206,12 +221,10 @@ int main()
                 afficherGrille(grille);
                 affDernierCoup(grille, col, joueur);
 
-
                 cpt++;
             }
             while(victoire(grille)==-1 && verifPlein(grille)==0 && chCol!='Q' && chCol!='q');
             finJeu(victoire(grille), choixMenu);
-
 
             break;
         case 3:
@@ -223,8 +236,10 @@ int main()
     }
     while(choixMenu!=3);
 
+    //Permet d'attendre une pression sur enter pour que l'utilisateur voit le message d'au revoir
     fflush(stdin);
     scanf("%c", &reponse);
+
     return 0;
 }
 
