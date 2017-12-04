@@ -10,7 +10,7 @@
 BENJAMIN BELLUZ
 HEPL INPRES, Informatique de gestion 1 2105
 Dernière modification : 24/11/2017 14:05
-Version en cours : 1.04 -> Version interne
+Version en cours : 1.1 -> Version interne
 
 1.0
 -Version complète initiale
@@ -30,12 +30,12 @@ Version en cours : 1.04 -> Version interne
 -simplification de la fonction d'évaluation -> l'ordinateur va essayer de gagner, et plus de faire des séries de 2 et 3. Juste gagner
 -supprimer les fonctions min et max initiales -> plus que alphaBeta min et max
 -ajout d'un message quand l'ordinateur réfléchit
+
+1.11
+-restauration de la fonction heuristique -> empêchait l'ordinateur de gagner en fin de partie
+-correction d'un bogue lors du calcul de la profondeur dynamique qui renvoyait une profondeur aléatoire en fin de partie
 */
 
-
-/*
-ELAGAGE APLHA BETA!!
-*/
 
 /*
 EZ DRAW POUR UNE INTERFACE UN PEU PLUS JOLIE

@@ -5,10 +5,21 @@
 #include "jeu.h"
 
 //#define PROF 2
-#define VALS2 1
-#define VALS3 100
-#define VALS4 1000
-#define MAXINIT 100000
+#define VALS2   1
+#define VALS3   100
+#define VALS4   10000
+#define MAXINIT 1000000
+
+
+/*
+On a un problème avec l'heuristique ! Au début du jeu, il est TRES intéressant de récompenser les séries
+de 2 et 3 pions. En effet, il est difficilé, même avec une profondeur de 10 coups, de faire un coup gagnant au début du jeu.
+Dès lors, il serait intéressant de restaurer la fonction d'évaluation à son algorithme original.
+On pourrait, peut-être, utiliser une heuristique plus simple pour la fin de partie. À tester !
+
+En plus, potentiel problème avec la profondeur en fin de jeu pour l'instant...
+*/
+
 
 
 //SIMULE UNE SERIE DE MOUVEMENTS CONSECUTIFS DANS LA GRILLE
@@ -26,9 +37,10 @@ Du coup l'ia pensait pouvoir jouer seule :haha:
 int IAjouer(int grille[6][7], int *maxAdd, int dif)
 {
     int i, j, max[2], val;
-    int tab[6][7];
+    int tab[7][7]; //Une ligne en plus pour garder en mémoire la première ligne libre de chaque colonne
     int profondeur;
-    int colonne;
+//    int profIterativeDeepening;
+
 
     profondeur=profondeurMod(dif, grille);
 
@@ -41,16 +53,24 @@ int IAjouer(int grille[6][7], int *maxAdd, int dif)
 
     copyTab(grille, tab);
 
-    //POUR TOUS LES COUPS
-
     for(j=0; j<7; j++)
     {
-        i=ligne(j, tab);
+        tab[6][j] = ligne(j, tab);
+    }
+
+    //POUR TOUS LES COUPS
+    //Ca ne fonctionne pas aussi bêtement que ça...
+    //for(profIterativeDeepening=0; profIterativeDeepening<=profondeur; profIterativeDeepening++){
+    for(j=0; j<7; j++)
+    {
+        //i=ligne(j, tab);
+        i=tab[6][j];
         //SI LA COLONNE EST VIDE
-        if(i!= -1)
+        if(tab[6][j] != -1)
         {
             //ON SIMULE UN COUP DE L'IA
             tab[i][j]=1;
+            tab[6][j]-=1;
             val=alphaBetaMin(tab, max[0], MAXINIT, profondeur-1);
 
             //if(val>max[0] || ((val == max[0]) && (rand()%2 == 0)))
@@ -60,6 +80,7 @@ int IAjouer(int grille[6][7], int *maxAdd, int dif)
                 max[1] = j;
             }
             suppPion(tab, j);
+            tab[6][j]+=1;
         }
     }
     return max[1];
@@ -80,8 +101,10 @@ int alphaBetaMax(int tab[6][7], int alpha, int beta, int profondeur) //VERIFIER 
     {
         if(tab[0][j] == 0)
         {
-            i=ligne(j, tab);
+            //i=ligne(j, tab);
+            i=tab[6][j];
             tab[i][j] = 1;
+            tab[6][j]-=1;
 
             tmp = alphaBetaMin(tab, alpha, beta, profondeur-1);
 //Condition pour ne pas toujours jouer au même endroit
@@ -94,6 +117,7 @@ int alphaBetaMax(int tab[6][7], int alpha, int beta, int profondeur) //VERIFIER 
             //Ca a déjà résolu une bonne partie des problèmes.. l'ordinateur ne rempli déjà plus bêtement la grille !
             //Sauf qu'il n'a pas vraiment envie de me contrer on dirait -> Trouver d'où ce problème vient !
             tab[i][j] = 0;
+            tab[6][j]+=1;
 
             //Coupure beta
             if(tmp >= beta)
@@ -120,11 +144,12 @@ int alphaBetaMin(int tab[6][7], int alpha, int beta, int profondeur)
     {
         if(tab[0][j] == 0)
         {
-            i=ligne(j, tab);
-
+            //i=ligne(j, tab);//AMELIORER ICI
+            i=tab[6][j];
             //IL Y AVAIT UN 1 ICI !! JE CROIS QUE C'EST POUR CA QU'IL NE CONTRAIT RIEN !
             //DANS LA SIMULATION IL N'Y A QUE L'IA QUI JOUAIT !
             tab[i][j] = 2;
+            tab[6][j]-=1;
 
             tmp = alphaBetaMax(tab, alpha, beta, profondeur-1);
 
@@ -132,7 +157,7 @@ int alphaBetaMin(int tab[6][7], int alpha, int beta, int profondeur)
 
             //Supprimer le pion
             tab[i][j] = 0;
-
+            tab[6][j]+=1;
             //Coupure alpha
             if(tmp <= alpha)
                 return alpha;
@@ -155,6 +180,10 @@ int IAeval(int grille[6][7])
 {
     int vainqueur, nb_pions=0, val=0;
     int i, j;
+    int series2_J1=0, series2_J2=0;
+    int series3_J1=0, series3_J2=0;
+    //On a juste besoin de deux pointeurs à la fois. On peut les modifier au besoin.
+    int *p1, *p2;
 
     //COMPTER NB PIONS
     for(i=0; i<6; i++)
@@ -168,15 +197,39 @@ int IAeval(int grille[6][7])
 
     vainqueur=victoire(grille);
 
-    //pour gagner le plus vite possible
-    if(vainqueur==1)
-        val = VALS4 - nb_pions;
-    //pour perdre le moins vite possible
-    else if(vainqueur==2)
-        val = -VALS4 + nb_pions;
 
-    //Si il y égalité ou que la partie n'est pas finie, on renvoit 0
+    //Si il y égalité, on renvoit 0
 
+    if(vainqueur != -1)
+    {
+
+        //pour gagner le plus vite possible
+        if(vainqueur==1)
+            val = VALS4 - nb_pions;
+        //pour perdre le moins vite possible
+        else if(vainqueur==2)
+            val = -VALS4 + nb_pions;
+        //Si partie a egalité
+        else if(vainqueur==0)
+            val = 0;
+    }
+    //Si la partie n'est pas finie, on renvoit une valeur calculée en fonction des séries de 2 et 3 pions
+    else
+    {
+        p1=&series2_J1;
+        p2=&series2_J2;
+        nb_series(grille, p1, p2, 2);
+
+        p1=&series3_J1;
+        p2=&series3_J2;
+        nb_series(grille, p1, p2, 3);
+
+        //printf("\n\t s2 j1: %d \tj2: %d", series2_J1, series2_J2);
+
+        val = VALS2 * (series2_J1-series2_J2) + VALS3 * (series3_J1-series3_J2); //On peut rajouter -1 dans les parenthèses pour rendre
+        //l'IA plus défensive -> pourrait être utile pour des profondeurs faibles, mais pas certain.
+    }
+    //On renvoit la valeur calculée, quelle qu'elle soit
     return val;
 }
 
@@ -208,7 +261,7 @@ void suppPion(int tab[6][7], int col)
 int profondeurMod(int difficulte, int tab[6][7])
 {
     int nb_pions=0;
-    int i, j, profondeur;
+    int i, j, profondeur, profModulee;
     float coef, new_prof;
 
     switch(difficulte)
@@ -217,16 +270,16 @@ int profondeurMod(int difficulte, int tab[6][7])
         profondeur=4;
         break;
     case 2:
-        profondeur=8;
+        profondeur=6;
         break;
     case 3:
-        profondeur=12;
+        profondeur=10;
         break;
     case 4:
-        profondeur=18;
+        profondeur=16;
         break;
     default:
-        profondeur=8;
+        profondeur=6;
     }
 
     //Nombre de pions
@@ -238,16 +291,19 @@ int profondeurMod(int difficulte, int tab[6][7])
                 nb_pions++;
         }
     }
-    const pions = 27;
+    int pions = 26;
 
     if(nb_pions <= pions)
+    {
         coef = (float)nb_pions/pions;
-
-    if(coef<0.5)
-        coef=0.5;
+        if(coef<0.5)
+            coef=0.5;
+    }
+    else
+        coef=1;
 
     new_prof=profondeur*coef;
-    profondeur=(int)new_prof;
+    profModulee=(int)new_prof;
 
-    return profondeur;
+    return profModulee;
 }
