@@ -16,3 +16,7 @@
 -simplification de la fonction d'évaluation -> l'ordinateur va essayer de gagner, et plus de faire des séries de 2 et 3. Juste gagner
 -supprimer les fonctions min et max initiales -> plus que alphaBeta min et max
 -ajout d'un message quand l'ordinateur réfléchit
+
+1.11
+-restauration de la fonction heuristique -> empêchait l'ordinateur de gagner en fin de partie
+-correction d'un bogue lors du calcul de la profondeur dynamique qui renvoyait une profondeur aléatoire en fin de partie
