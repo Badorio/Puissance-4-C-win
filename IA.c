@@ -4,12 +4,16 @@
 #include <time.h> //pour le srand()
 #include "jeu.h"
 
-//#define PROF 2
+
 #define VALS2   1
 #define VALS3   100
 #define VALS4   10000
 #define MAXINIT 1000000
 
+#define PROF_DIF_1  4
+#define PROF_DIF_2  8
+#define PROF_DIF_3  12
+#define PROF_DIF_4  16
 
 /*
 On a un problème avec l'heuristique ! Au début du jeu, il est TRES intéressant de récompenser les séries
@@ -260,26 +264,31 @@ void suppPion(int tab[6][7], int col)
 
 int profondeurMod(int difficulte, int tab[6][7])
 {
-    int nb_pions=0;
+    int nb_pions=0, pionsMax;
     int i, j, profondeur, profModulee;
     float coef, new_prof;
 
     switch(difficulte)
     {
     case 1:
-        profondeur=4;
+        profondeur=PROF_DIF_1;
+        pionsMax=1;
         break;
     case 2:
-        profondeur=6;
+        profondeur=PROF_DIF_2;
+        pionsMax=8;
         break;
     case 3:
-        profondeur=10;
+        profondeur=PROF_DIF_3;
+        pionsMax=20;
         break;
     case 4:
-        profondeur=16;
+        profondeur=PROF_DIF_4;
+        pionsMax=26;
         break;
     default:
-        profondeur=6;
+        profondeur=PROF_DIF_2;
+        pionsMax=8;
     }
 
     //Nombre de pions
@@ -291,11 +300,11 @@ int profondeurMod(int difficulte, int tab[6][7])
                 nb_pions++;
         }
     }
-    int pions = 26;
 
-    if(nb_pions <= pions)
+
+    if(nb_pions <= pionsMax)
     {
-        coef = (float)nb_pions/pions;
+        coef = (float)nb_pions/pionsMax;
         if(coef<0.5)
             coef=0.5;
     }

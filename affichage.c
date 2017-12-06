@@ -38,7 +38,7 @@ void difMenu()
     printf("1: Facile\n");
     printf("2: Moyen\n");
     printf("3: Difficile\n");
-    printf("4: Tres difficile\n");
+    printf("4: Impossible a battre\n");
 }
 
 void afficherGrille(int grille[6][7])
@@ -191,4 +191,12 @@ void affDernierCoup(int tab[6][7], int colonne, int joueur)
         }
     }
     color(15,0);
+}
+
+void enterToContinue()
+{
+    char c;
+    printf("\n\nAppuyez sur entree pour continuer...\n");
+    fflush(stdin);
+    scanf("%c", &c);
 }

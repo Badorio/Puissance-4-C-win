@@ -9,8 +9,8 @@
 /*
 BENJAMIN BELLUZ
 HEPL INPRES, Informatique de gestion 1 2105
-Dernière modification : 24/11/2017 14:05
-Version en cours : 1.1 -> Version interne
+Dernière modification : 04/12/2017
+Version en cours : 1.12
 
 1.0
 -Version complète initiale
@@ -34,6 +34,9 @@ Version en cours : 1.1 -> Version interne
 1.11
 -restauration de la fonction heuristique -> empêchait l'ordinateur de gagner en fin de partie
 -correction d'un bogue lors du calcul de la profondeur dynamique qui renvoyait une profondeur aléatoire en fin de partie
+
+1.12
+-modification de la gestion de la profondeur
 */
 
 
@@ -50,26 +53,32 @@ int main()
     int i, max, col, cpt, joueur;
     int grille[6][7];
     int *p1;
-    int choixMenu;
+    short choixMenu;
     char reponse, chCol;
     int dif;
 
     p1=&max;
 
-    printf("\nPuissance 4 en C pour Windows !\n\n");
     do
     {
-        menu();
-        fflush(stdin);
-        scanf("%d", &choixMenu);
         effacerAff();
-        initGrille(grille);
+        printf("\nPuissance 4 en C pour Windows !\n");
+        menu();
+
+        //Permet d'éviter que si l'on tape une valeur hors entier (char) le contenu de la var ne soit pas modifié et que le dernier choix soit utilisé
+        choixMenu=-1;
+        //Encoder le choix du menu
+        fflush(stdin);
+        scanf("%hd", &choixMenu);
+
+        effacerAff();
 
         switch(choixMenu)
         {
         //1 JOUEUR
         case 1:
             //DIFFICULTE DE LA PARTIE
+            initGrille(grille);
             do
             {
                 difMenu();
@@ -168,13 +177,16 @@ int main()
             }
             while(victoire(grille)==-1 && verifPlein(grille)==0 && chCol!= 'Q' && chCol != 'q');
             //AFFICHER LA GRILLE A LA FIN
+            effacerAff();
             afficherGrille(grille);
             affDernierCoup(grille, col, (cpt+1)%2+1);
             finJeu(victoire(grille), choixMenu);
+            enterToContinue();
 
             break;
         //2 JOUEURS
         case 2:
+            initGrille(grille);
             afficherGrille(grille);
 
             do
@@ -225,13 +237,14 @@ int main()
             }
             while(victoire(grille)==-1 && verifPlein(grille)==0 && chCol!='Q' && chCol!='q');
             finJeu(victoire(grille), choixMenu);
-
+            enterToContinue();
             break;
         case 3:
             printf("\n\nAu revoir !");
             break;
         default:
             printf("\n\nCHOIX INVALIDE !\n");
+            enterToContinue();
         }
     }
     while(choixMenu!=3);

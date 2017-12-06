@@ -12,4 +12,6 @@ Mode 2: 2 joueurs
 
 void affDernierCoup(int tab[6][7], int colonne, int joueur);
 
+void enterToContinue();
+
 #endif // AFFICHAGE_H_INCLUDED
