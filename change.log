@@ -20,3 +20,7 @@
 1.11
 -restauration de la fonction heuristique -> empêchait l'ordinateur de gagner en fin de partie
 -correction d'un bogue lors du calcul de la profondeur dynamique qui renvoyait une profondeur aléatoire en fin de partie
+
+1.12
+-modification de la gestion de la profondeur
+-correction d'un bug qui permettait d'accéder à un choix du menu en entrant une valeur incorrecte lorsqu'une partie avait déjà été jouée
